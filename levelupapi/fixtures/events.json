@@ -1,0 +1,12 @@
+[
+    {
+        "model": "levelupapi.event",
+        "pk": 1,
+        "fields": {
+            "datetime": "2020-10-31 12:00",
+            "game_id": 1,
+            "gamer_id": 1,
+            "location": "outside"
+        }
+    }
+]

@@ -1,0 +1,16 @@
+{
+    "python.linting.pylintEnabled": true,
+    "cSpell.words": [
+        "gametype",
+        "levelupapi",
+        "yacv"
+    ],
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "levelup",
+            "database": "${workspaceFolder:levelup}/db.sqlite3"
+        }
+    ]
+}
