@@ -9,10 +9,10 @@ class GameTypes(ViewSet):
     """Level up game types"""
 
     def retrieve(self, request, pk=None):
-        """Handle GET requests for single game type
+        """Handle GET requests for single gametype
 
         Returns:
-            Response -- JSON serialized game type
+            Response -- JSON serialized gametype
         """
         try:
             game_type = GameType.objects.get(pk=pk)
