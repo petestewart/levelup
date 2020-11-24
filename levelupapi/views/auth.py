@@ -2,6 +2,7 @@ import json
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from levelupapi.models import Gamer
@@ -38,8 +39,7 @@ def login_user(request):
 
 @csrf_exempt
 def register_user(request):
-    '''Handles the creation of a new gamer for authentication
-
+    '''Handles the creation of a new user for authentication
     Method arguments:
       request -- The full HTTP request object
     '''
@@ -57,7 +57,6 @@ def register_user(request):
         last_name=req_body['last_name']
     )
 
-    # Now save the extra info in the levelupapi_gamer table
     gamer = Gamer.objects.create(
         bio=req_body['bio'],
         user=new_user
@@ -71,4 +70,4 @@ def register_user(request):
 
     # Return the token to the client
     data = json.dumps({"token": token.key})
-    return HttpResponse(data, content_type='application/json')
+    return HttpResponse(data, content_type='application/json', status=status.HTTP_201_CREATED)

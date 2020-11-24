@@ -14,37 +14,34 @@ class Games(ViewSet):
 
     def create(self, request):
         """Handle POST operations
-
         Returns:
             Response -- JSON serialized game instance
         """
-
-        # Uses the token passed in the `Authorization` header
         gamer = Gamer.objects.get(user=request.auth.user)
 
-        # Create a new Python instance of the Game class
-        # and set its properties from what was sent in the
-        # body of the request from the client.
         game = Game()
-        game.title = request.data["title"]
-        game.maker = request.data["maker"]
-        game.number_of_players = request.data["numberOfPlayers"]
-        game.skill_level = request.data["skillLevel"]
+
+        try:
+            game.title = request.data["title"]
+            game.maker = request.data["maker"]
+            game.number_of_players = request.data["numberOfPlayers"]
+            game.skill_level = request.data["skillLevel"]
+        except KeyError as ex:
+            return Response({'message': 'Incorrect key was sent in request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
         game.gamer = gamer
 
-        gametype = GameType.objects.get(pk=request.data["gameTypeId"])
-        game.gametype = gametype
+        try:
+            gametype = GameType.objects.get(pk=request.data["gameTypeId"])
+            game.gametype = gametype
+        except GameType.DoesNotExist as ex:
+            return Response({'message': 'Game type provided is not valid'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Use the Django ORM to get the record from the database
-        # whose `id` is what the client passed as the `gameTypeId`
-        # in the body of the request
         try:
             game.save()
             serializer = GameSerializer(game, context={'request': request})
-            return Response(serializer.data)
-
-        # If anything went wrong, catch the exception and send a response
-        # with a 400 status code to tell the client that something was wrong with its request data
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         except ValidationError as ex:
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -62,19 +59,20 @@ class Games(ViewSet):
             game = Game.objects.get(pk=pk)
             serializer = GameSerializer(game, context={'request': request})
             return Response(serializer.data)
+        
+        except Game.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
         except Exception as ex:
             return HttpResponseServerError(ex)
 
     def update(self, request, pk=None):
         """Handle PUT requests for a game
-
         Returns:
-            Response -- Empty body with 2-4 status code
+            Response -- Empty body with 204 status code
         """
         gamer = Gamer.objects.get(user=request.auth.user)
 
-        # Do mostly the same thing as POST, but instead of creating a new instance of Game,
-        # get the game record from the database whose primary key is `pk`
         game = Game.objects.get(pk=pk)
         game.title = request.data["title"]
         game.maker = request.data["maker"]
@@ -86,7 +84,6 @@ class Games(ViewSet):
         game.gametype = gametype
         game.save()
 
-        # 204 status code means everything worked but server is not sending any data in the response
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
     def destroy(self, request, pk=None):
