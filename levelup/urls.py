@@ -10,9 +10,11 @@ router.register(r'games', Games, 'game')
 router.register(r'events', Events, 'event')
 # router.register(r'profile', Profile, 'profile')
 
+from django.contrib import admin
 urlpatterns = [
     path('', include(router.urls)),
     path('register', register_user),
+    path('admin/', admin.site.urls),
     path('login', login_user),
-    path('api-auth', include('rest_framework.urls', namespace='rest_framework')),
+    path('api-auth', include('rest_framework.urls', namespace='rest_framework'))
 ]
