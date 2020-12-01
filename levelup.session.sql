@@ -3,17 +3,15 @@ python manage.py loaddata tokens
 python manage.py loaddata gamers;
 
 SELECT
-    g.id,
-    g.title,
-    g.maker,
-    g.gametype_id,
-    g.number_of_players,
-    g.skill_level,
-    u.id user_id,
-    u.first_name || ' ' || u.last_name AS full_name
+    e.organizer_id,
+    u.first_name || ' ' || u.last_name AS full_name,
+    e.id,
+    e.date,
+    e.time,
+    g.title
 FROM
-    levelupapi_game g
+    levelupapi_event e
 JOIN
-    levelupapi_gamer gr ON g.gamer_id = gr.id
+    levelupapi_game g ON e.game_id = g.id
 JOIN
-    auth_user u ON gr.user_id = u.id
+    auth_user u ON e.organizer_id = u.id
